@@ -1,0 +1,206 @@
+openapi: 3.0.0
+info:
+  title: Заказ на ресурсы облака
+  version: 0.0.1
+servers:
+- url: http://localhost:8080/api/v1/
+  description: Dev server
+paths:
+  /clouds:
+    get:
+      tags:
+      - Clouds
+      summary: Метод получения списка ресурсов на облако
+      operationId: getAllClouds
+      responses:
+        "200":
+          description: Успешный ответ со списком ресурсов в облаке
+          content:
+            adplication/json:
+              schema:
+                $ref: '#/components/schemas/Cloud'
+        default:
+          description: Все остальное
+          content:
+            adplication/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-swagger-router-controller: Clouds
+  /clouds/{CPU}/{HDD}/{RAM}/{OS}:
+    post:
+      tags:
+      - Clouds
+      summary: Метод создания заказа на облако
+      operationId: createCloud
+      parameters:
+      - name: CPU
+        in: path
+        description: Количество ядер CPU
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 24 ядра
+      - name: HDD
+        in: path
+        description: объем HDD
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 150Tb
+      - name: RAM
+        in: path
+        description: объем RAM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 128Gb
+      - name: OS
+        in: path
+        description: операционная система
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Windows
+      requestBody:
+        content:
+          adplication/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+        required: true
+      responses:
+        "200":
+          description: Успешный ответ создания заказа в облаке
+          content:
+            adplication/json:
+              schema:
+                $ref: '#/components/schemas/Cloud'
+        default:
+          description: Все остальное
+          content:
+            adplication/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-swagger-router-controller: Clouds
+  /clouds/{cloud_id}:
+    get:
+      tags:
+      - Clouds
+      summary: Метод получения заказа ресурсов на облако по ID
+      operationId: getCloudById
+      parameters:
+      - name: cloud_id
+        in: path
+        description: Идентификатор заказа облака
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: f102b615
+      responses:
+        "200":
+          description: Успешный ответ заказом облака по ID
+          content:
+            adplication/json:
+              schema:
+                $ref: '#/components/schemas/Cloud'
+        default:
+          description: Все остальное
+          content:
+            adplication/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-swagger-router-controller: Clouds
+    delete:
+      tags:
+      - Clouds
+      summary: Метод отмены заказа на облако по ID
+      operationId: cencelCloudById
+      parameters:
+      - name: cloud_id
+        in: path
+        description: Идентификатор заказа облака
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: f102b615
+      responses:
+        "200":
+          description: Успешный ответ заказом облака по ID
+          content:
+            adplication/json: {}
+        default:
+          description: Все остальное
+          content:
+            adplication/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-swagger-router-controller: Clouds
+components:
+  schemas:
+    Cloud:
+      required:
+      - CPU
+      - HDD
+      - OS
+      - PS_id
+      - RAM
+      - id_customer
+      type: object
+      properties:
+        cloud_id:
+          type: string
+          example: f102b615
+        id_customer:
+          type: string
+          example: f102b615
+        OS:
+          type: string
+          description: Операционная система сервера
+          enum:
+          - Windows
+          - Linux
+        RAM:
+          type: string
+          example: "128"
+        CPU:
+          type: string
+          example: 24 ядра
+        PS_id:
+          type: string
+          example: "192.165.1.1, 192.165.1.125"
+        HDD:
+          type: string
+          example: 150Tb
+      example:
+        OS: Windows
+        id_customer: f102b615
+        CPU: 24 ядра
+        PS_id: "192.165.1.1, 192.165.1.125"
+        HDD: 150Tb
+        cloud_id: f102b615
+        RAM: "128"
+    Clouds:
+      type: array
+      items:
+        $ref: '#/components/schemas/Cloud'
+    Error:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
